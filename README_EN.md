@@ -10,6 +10,22 @@
 [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg?style=flat-square)](/LICENSE)
 [![CircleCI](https://circleci.com/gh/DreamStacks/food-geo-mapping.svg?style=svg)](https://circleci.com/gh/DreamStacks/food-geo-mapping)
 
+## Local development
+
+Use Node.js 24 LTS (currently pinned to 24.21.0) and pnpm 12.6.0. With fnm:
+
+```sh
+fnm install
+fnm use
+npm install --global pnpm@12.6.0
+pnpm install
+pnpm dev
+```
+
+Run `pnpm check` to check TypeScript files and `pnpm build` to generate the Vercel server deployment output. CI reads the Node version from `.node-version` and the pnpm version from `package.json`.
+
+The project uses TypeScript 7 without `@astrojs/check`, which does not yet support this version. `pnpm check` does not check types inside `.astro` templates; `pnpm build` verifies template compilation.
+
 ## Project objectives
 
 - work on creating a guide to foodies (fruits and specialties)

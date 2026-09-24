@@ -10,6 +10,22 @@
 [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg?style=flat-square)](/LICENSE)
 [![CircleCI](https://circleci.com/gh/DreamStacks/food-geo-mapping.svg?style=svg)](https://circleci.com/gh/DreamStacks/food-geo-mapping)
 
+## 本地开发
+
+使用 Node.js 24 LTS（当前固定为 24.21.0）和 pnpm 12.6.0。使用 fnm 时：
+
+```sh
+fnm install
+fnm use
+npm install --global pnpm@12.6.0
+pnpm install
+pnpm dev
+```
+
+运行 `pnpm check` 检查 TypeScript 文件，运行 `pnpm build` 生成 Vercel 服务端部署产物。CI 从 `.node-version` 读取 Node 版本，并使用 `package.json` 中指定的 pnpm 版本。
+
+项目使用 TypeScript 7，已移除尚不支持该版本的 `@astrojs/check`。`pnpm check` 不检查 `.astro` 模板内部的类型；模板编译由 `pnpm build` 验证。
+
 ## 项目目标
 
 - 致力于打造一个关于吃货（水果和特产）的指南
