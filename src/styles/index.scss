@@ -36,7 +36,7 @@ body::before {
   pointer-events: none;
   background:
     linear-gradient(rgb(8 16 24 / 65%), rgb(8 16 24 / 48%) 45%, rgb(8 16 24 / 65%)),
-    url('https://cdn.ihoey.com/food/img/rain_bg.png?imageMogr2/format/webp/blur/1x0/quality/90') center / cover no-repeat;
+    url('../assets/rain_bg.webp') center / cover no-repeat;
 }
 
 .ds-main {
