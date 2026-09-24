@@ -37,6 +37,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Check TypeScript
         run: pnpm check
+      - name: Test
+        run: pnpm test
       - name: Build
         shell: "bash"
         working-directory: "."

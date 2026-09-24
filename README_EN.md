@@ -26,6 +26,8 @@ Run `pnpm check` to check TypeScript files and `pnpm build` to generate the Verc
 
 The project uses TypeScript 7 without `@astrojs/check`, which does not yet support this version. `pnpm check` does not check types inside `.astro` templates; `pnpm build` verifies template compilation.
 
+The About page reads the local `CHANGELOG.md` at build time and is prerendered without GitHub API requests. Rebuild and redeploy after adding release notes. Run `pnpm test` to verify changelog parsing.
+
 ## Project objectives
 
 - work on creating a guide to foodies (fruits and specialties)

@@ -1,92 +1,307 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { fetchChangeLog } from "../api";
-import { Buffer } from "node:buffer";
-import localChangeLog from "../../CHANGELOG.md?raw";
+import changelog from "../../CHANGELOG.md?raw";
+import { parseChangelog } from "../utils/changelog";
 
-interface VersionItem {
-  version: string;
-  date: string;
-  subTitle: string;
-  list: string[];
+export const prerender = true;
+
+const releases = parseChangelog(changelog);
+const groupLabels: Record<string, string> = {
+  'Bug Fixes': '问题修复',
+  'Features': '功能更新',
+  'Performance Improvements': '性能优化',
+  'BREAKING CHANGES': '不兼容变更',
+};
+
+function formatDate(date: string) {
+  const [year, month, day] = date.split('-');
+  return `${year} 年 ${Number(month)} 月 ${Number(day)} 日`;
 }
-
-const aboutColorList = ["rgba(104, 123, 209, 0.4)", "rgba(204, 113, 77, 0.4)"];
-
-function md2Object(data: string[]) {
-  const versionList: VersionItem[] = [];
-
-  data.forEach((e) => {
-    let item: VersionItem = {
-      version: "",
-      date: "",
-      subTitle: "",
-      list: [],
-    };
-    if (e.includes("## [")) {
-      versionList.push(item);
-      item.version = e.match(/\d.\d.\d/)?.[0] || "";
-      item.date = e.match(/....-..-../)?.[0] || "";
-    }
-    if (e.includes("### [")) {
-      item.subTitle = e.slice(4);
-    }
-    if (e.includes("* ")) {
-      if (!item.list) item.list = [];
-      item.list.push(e.match(/\s.* /)?.[0] || "");
-    }
-  });
-
-  return versionList;
-}
-
-let changelog = localChangeLog;
-try {
-  const data = await fetchChangeLog();
-  if (typeof data.content === "string") {
-    changelog = Buffer.from(data.content, "base64").toString("utf8");
-  }
-} catch {
-  // Keep the page available when GitHub is rate-limited or unreachable.
-}
-const aboutData: VersionItem[] = md2Object(changelog.split("\n"));
 ---
 
-<Layout title={"关于我们"}>
-  <div class='ds-about'>
-    <el-timeline>
-      {
-        aboutData.map((item, index) => {
-          return (
-            <el-timeline-item key={item.date} timestamp={item.date} placement='top'>
-              <el-card class='ds-about-card' style={{ backgroundColor: aboutColorList[index] }}>
-                <h2>Version {item.version}</h2>
-                <ul class='ds-about-card-lists'>
-                  {item.list.map((e) => {
-                    <li class='ds-about-card-li'>{e}</li>;
-                  })}
-                </ul>
-              </el-card>
-            </el-timeline-item>
-          );
-        })
-      }
-    </el-timeline>
-  </div>
+<Layout title='关于吃货指南'>
+  <article class='about-page' aria-labelledby='about-title'>
+    <header class='about-intro'>
+      <h1 id='about-title'>关于吃货指南</h1>
+      <p>我们希望把水果、地方小吃与特产整理成一份开放的指南，也欢迎你参与内容、设计与开发。</p>
+      <nav class='project-links' aria-label='了解项目'>
+        <a href='/team'>认识团队 <span aria-hidden='true'>→</span></a>
+        <a href='https://github.com/DreamStacks/food-geo-mapping' target='_blank' rel='noopener noreferrer'>
+          GitHub 仓库 <span aria-hidden='true'>↗</span>
+        </a>
+      </nav>
+    </header>
+
+    <section class='changelog' aria-labelledby='changelog-title'>
+      <header class='changelog-heading'>
+        <h2 id='changelog-title'>更新记录</h2>
+        <p>功能的完善，问题的修复，都记录在这里。</p>
+      </header>
+
+      {releases.length === 0 ? <p class='empty-log'>更新记录正在整理中。</p> : (
+        <div class='release-list'>
+          {releases.map((release, index) => (
+            <details class='release' open={index === 0}>
+              <summary>
+                <span class='release-heading'>
+                  <span class='version'>{release.version}</span>
+                  {index === 0 && <span class='recent-label'>最近记录</span>}
+                  {release.date && <time datetime={release.date}>{formatDate(release.date)}</time>}
+                </span>
+                <span class='expand-icon' aria-hidden='true'></span>
+              </summary>
+              <div class='release-content'>
+                {release.groups.filter(group => group.items.length > 0).map(group => (
+                  <section class='change-group'>
+                    <h3>{groupLabels[group.title] ?? group.title}</h3>
+                    <ul>
+                      {group.items.map(item => (
+                        <li>
+                          <span>{item.text}</span>
+                          {item.commit && (
+                            <a class='commit-link' href={item.commit.url} target='_blank' rel='noopener noreferrer' aria-label={`查看提交 ${item.commit.label}（新窗口）`}>
+                              {item.commit.label}<span aria-hidden='true'> ↗</span>
+                            </a>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+                {release.groups.every(group => group.items.length === 0) && <p class='empty-log'>此版本暂无详细记录。</p>}
+                {release.url && <a class='release-link' href={release.url} target='_blank' rel='noopener noreferrer'>查看版本差异 <span aria-hidden='true'>↗</span></a>}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
+    </section>
+  </article>
 </Layout>
 
-<style lang='scss' scoped>
-  .ds-about {
-    margin-top: 100px;
-    text-align: left;
-    &-card {
-      border: 0;
-      color: rgb(255, 255, 255);
-      &-li {
-        color: rgb(221, 221, 221);
-        line-height: 24px;
-        font-size: 18px;
+<style lang='scss'>
+  .about-page {
+    width: 100%;
+    max-width: 960px;
+    margin: clamp(32px, 5vh, 64px) auto;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: 16px;
+    background: rgb(8 16 24 / 78%);
+  }
+
+  .about-intro {
+    h1 {
+      margin: 0 0 20px;
+      color: var(--color-blue);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 650;
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+    }
+
+    p {
+      max-width: 36em;
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 1rem;
+      line-height: 1.9;
+      text-wrap: pretty;
+    }
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin-top: 20px;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      color: var(--color-yellow);
+      font-size: 0.875rem;
+    }
+  }
+
+  .changelog {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid rgb(209 218 224 / 18%);
+  }
+
+  .changelog-heading {
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.375rem;
+      font-weight: 550;
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 0.9375rem;
+    }
+  }
+
+  .release {
+    border-top: 1px solid rgb(209 218 224 / 18%);
+
+    &:last-child {
+      border-bottom: 1px solid rgb(209 218 224 / 18%);
+    }
+
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-block: 24px;
+      list-style: none;
+      cursor: pointer;
+
+      &::-webkit-details-marker {
+        display: none;
       }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-yellow);
+        outline-offset: 4px;
+        border-radius: 4px;
+      }
+
+      &:hover .version {
+        color: var(--color-yellow);
+      }
+    }
+  }
+
+  .release-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    min-width: 0;
+
+    time {
+      color: var(--color-muted);
+      font-size: 0.8125rem;
+    }
+  }
+
+  .version {
+    font-size: 1.25rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+
+  .recent-label {
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgb(85 199 240 / 12%);
+    color: var(--color-blue);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .expand-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--color-muted);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 7px 1px;
+      background: currentColor;
+    }
+
+    &::after {
+      transform: rotate(90deg);
+    }
+  }
+
+  .release[open] .expand-icon::after {
+    display: none;
+  }
+
+  .release-content {
+    padding-bottom: 28px;
+  }
+
+  .change-group {
+    margin-bottom: 24px;
+
+    h3 {
+      margin: 0 0 12px;
+      color: var(--color-blue);
+      font-size: 0.9375rem;
+      font-weight: 550;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25em;
+    }
+
+    li {
+      padding-left: 4px;
+      margin-bottom: 10px;
+      color: var(--color-muted);
+      font-size: 0.9375rem;
+      line-height: 1.85;
+      overflow-wrap: anywhere;
+
+      &::marker {
+        color: var(--color-blue);
+      }
+    }
+  }
+
+  .commit-link {
+    display: inline;
+    margin-left: 12px;
+    padding-block: 4px;
+    color: var(--color-blue);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: rgb(85 199 240 / 40%);
+    text-underline-offset: 4px;
+  }
+
+  .release-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    gap: 8px;
+    color: var(--color-yellow);
+    font-size: 0.875rem;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+
+  .empty-log {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+
+  @media (max-width: 540px) {
+    .about-page {
+      padding: 24px 20px;
+    }
+
+    .release-heading time {
+      flex-basis: 100%;
     }
   }
 </style>

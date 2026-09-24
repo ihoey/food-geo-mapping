@@ -26,6 +26,8 @@ pnpm dev
 
 项目使用 TypeScript 7，已移除尚不支持该版本的 `@astrojs/check`。`pnpm check` 不检查 `.astro` 模板内部的类型；模板编译由 `pnpm build` 验证。
 
+关于页在构建时直接读取本地 `CHANGELOG.md` 并生成静态页面，不请求 GitHub API。新增更新记录后需重新构建部署；运行 `pnpm test` 验证版本、分类和条目的解析。
+
 ## 项目目标
 
 - 致力于打造一个关于吃货（水果和特产）的指南

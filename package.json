@@ -9,6 +9,7 @@
     "start": "astro dev",
     "build": "astro build",
     "check": "tsc --noEmit",
+    "test": "node --test src/utils/*.test.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -23,6 +24,7 @@
     "node": "24.x"
   },
   "devDependencies": {
+    "@types/node": "^24.13.6",
     "sass": "^1.105.0"
   }
 }
