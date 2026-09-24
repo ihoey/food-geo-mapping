@@ -1,0 +1,58 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image: string;
+}
+
+const { title, description, image } = Astro.props;
+---
+
+<section class='category-placeholder' aria-labelledby='category-title'>
+  <img src={image} alt='' width='120' height='120' />
+  <h1 id='category-title'>{title}</h1>
+  <p>{description}</p>
+  <a href='/'>返回首页</a>
+</section>
+
+<style>
+  .category-placeholder {
+    margin-block: auto;
+    padding-block: clamp(48px, 10vh, 120px);
+    text-align: center;
+  }
+
+  img {
+    display: block;
+    margin-inline: auto;
+  }
+
+  h1 {
+    margin: 24px 0 16px;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.3;
+  }
+
+  p {
+    max-width: 28em;
+    margin: 0 auto 32px;
+    color: #eee;
+    line-height: 1.8;
+    text-wrap: balance;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 24px;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    color: #fff001;
+  }
+
+  a:hover {
+    background-color: rgb(8 16 24 / 45%);
+  }
+</style>

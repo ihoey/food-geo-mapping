@@ -7,132 +7,217 @@ import fruit_logo from "../assets/fruit_logo.svg";
 const classify = [
   {
     title: "小吃",
+    description: "街巷里的地方风味",
     img: snack_logo.src,
     path: "/snacks",
   },
   {
     title: "水果",
+    description: "当季的新鲜与甜味",
     img: fruit_logo.src,
     path: "/fruits",
   },
 ];
 const title_cn = "吃货指南";
 const title_en = "Food-Geo Mapping";
-const poem = "所爱隔山海，山海不可平。若为美食往，千里皆可行";
+const poem = ["所爱隔山海，山海不可平。", "若为美食往，千里皆可行。"];
 ---
 
 <Layout title={title_cn}>
   <div class='content'>
     <div class='top'>
       <div class='logo'>
-        <img src='/logo.png' />
+        <img src='/logo.png' alt='吃货指南标志' width='160' height='160' />
       </div>
 
       <div class='headline'>
         <h1>{title_cn}</h1>
-        <h2>{title_en}</h2>
+        <p class='english-title' lang='en'>{title_en}</p>
       </div>
     </div>
 
-    <p class='poem'>{poem}</p>
+    <p class='poem'>{poem.map((line) => <span>{line}</span>)}</p>
 
-    <div class='center'>
+    <nav class='categories' aria-label='美食分类'>
       {
         classify.map((item) => {
           return (
-            <a href={item.path}>
-              <div class='classify_logo'>
-                <img src={item.img} />
-                <p>{item.title}</p>
-              </div>
+            <a href={item.path} class='category-link' aria-label={item.title}>
+              <img src={item.img} alt='' width='200' height='200' />
+              <span class='category-title'>{item.title}<span class='arrow' aria-hidden='true'>→</span></span>
+              <span class='category-description'>{item.description}</span>
             </a>
           );
         })
       }
-    </div>
+    </nav>
   </div>
 </Layout>
 
-<style lang='scss' scoped>
-  // @import "@/styles/mixin.scss";
-
-  // $bgColor: rgba(51, 51, 51, 0.1);
-  $fontColor1: rgb(56, 186, 238);
-  $fontColor2: rgb(255, 240, 1);
-  $poemColor: #cccccc;
-
+<style lang='scss'>
   .content {
-    padding-top: 100px;
-    // background: $bgColor;
+    width: 100%;
+    margin-block: auto;
+    padding-block: clamp(48px, 7vh, 100px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    > .top {
-      display: flex;
-      > .logo {
-        width: 160px;
-        height: 160px;
-        > img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-      > .headline {
-        width: 550px;
-        > h1 {
-          font-size: 60px;
-          line-height: 60px;
-          margin: 10px 0;
-          color: $fontColor1;
-        }
-        > h2 {
-          margin: 0;
-          line-height: 50px;
-          font-size: 50px;
-          margin: 20px 0;
-          color: $fontColor2;
-        }
-      }
-    }
-    > .poem {
-      font-weight: bold;
-      font-size: 20px;
-      line-height: 40px;
-      color: $poemColor;
-    }
-    > .center {
-      margin-top: 20px;
-      height: 350px;
-      display: flex;
-      align-items: center;
+    text-align: center;
+  }
 
-      > .splice {
-        margin: 0 120px;
-        width: 3px;
-        height: 100%;
-        background-color: #fff;
-      }
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(24px, 3vw, 36px);
+  }
 
-      > .classify_logo {
-        cursor: pointer;
-        > img {
-          width: 100%;
-          height: auto;
-        }
-        > p {
-          font-size: 30px;
-          margin: 0;
-        }
-        &:nth-of-type(1) {
-          > p {
-            color: $fontColor1;
-          }
-        }
-        &:nth-of-type(2) {
-          > p {
-            color: $fontColor2;
-          }
-        }
+  .logo {
+    flex-shrink: 0;
+    width: clamp(88px, 12vw, 128px);
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .headline {
+    min-width: 0;
+    text-align: left;
+
+    h1 {
+      margin: 0 0 18px;
+      color: var(--color-blue);
+      font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    .english-title {
+      margin: 0;
+      color: var(--color-yellow);
+      font-size: clamp(1.125rem, 2vw + 0.5rem, 1.75rem);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+  }
+
+  .poem {
+    max-width: 36em;
+    margin: clamp(24px, 4vh, 40px) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 0.5em;
+    color: var(--color-muted);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    line-height: 2;
+    text-wrap: balance;
+  }
+
+  .categories {
+    display: flex;
+    justify-content: center;
+    gap: clamp(20px, 8vw, 112px);
+    margin-top: clamp(36px, 6vh, 64px);
+  }
+
+  .category-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 20px 16px;
+    border-radius: 12px;
+    color: var(--color-blue);
+    font-size: clamp(1.375rem, 2vw, 1.625rem);
+    font-weight: 550;
+    line-height: 1.4;
+    transition: transform 180ms ease-out, background-color 180ms ease-out;
+
+    &:nth-child(2) {
+      color: var(--color-yellow);
+    }
+
+    img {
+      display: block;
+      width: clamp(88px, 14vw, 160px);
+      margin-bottom: 24px;
+      height: auto;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgb(8 16 24 / 45%);
+      transform: translateY(-4px);
+    }
+  }
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .arrow {
+    font-size: 1rem;
+    transition: transform 180ms ease-out;
+  }
+
+  .category-description {
+    margin-top: 10px;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.8;
+    white-space: nowrap;
+  }
+
+  .category-link:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 640px) {
+    .top {
+      flex-direction: column;
+    }
+
+    .headline {
+      text-align: center;
+    }
+
+    .poem {
+      flex-direction: column;
+    }
+
+    .category-link {
+      padding-inline: 8px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arrow {
+      transition: none;
+    }
+
+    .category-link:hover .arrow {
+      transform: none;
+    }
+
+    .category-link {
+      transition: none;
+
+      &:hover,
+      &:focus-visible {
+        transform: none;
       }
     }
   }

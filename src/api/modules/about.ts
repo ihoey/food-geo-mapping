@@ -5,6 +5,7 @@ export const fetchChangeLog = () => {
     "https://api.github.com/repos/DreamStacks/food-geo-mapping/contents/CHANGELOG.md?ref=master",
     {
       method: "get",
+      signal: AbortSignal.timeout(3000),
     }
   );
 };

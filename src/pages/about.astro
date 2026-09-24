@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { fetchChangeLog } from "../api";
+import { Buffer } from "node:buffer";
+import localChangeLog from "../../CHANGELOG.md?raw";
 
 interface VersionItem {
   version: string;
@@ -10,10 +12,6 @@ interface VersionItem {
 }
 
 const aboutColorList = ["rgba(104, 123, 209, 0.4)", "rgba(204, 113, 77, 0.4)"];
-
-function base642Utf8(data: string) {
-  return decodeURIComponent(encodeURIComponent(atob(data)));
-}
 
 function md2Object(data: string[]) {
   const versionList: VersionItem[] = [];
@@ -42,9 +40,16 @@ function md2Object(data: string[]) {
   return versionList;
 }
 
-const data = await fetchChangeLog();
-const changelog = base642Utf8(data.content).split("\n");
-const aboutData: VersionItem[] = md2Object(changelog);
+let changelog = localChangeLog;
+try {
+  const data = await fetchChangeLog();
+  if (typeof data.content === "string") {
+    changelog = Buffer.from(data.content, "base64").toString("utf8");
+  }
+} catch {
+  // Keep the page available when GitHub is rate-limited or unreachable.
+}
+const aboutData: VersionItem[] = md2Object(changelog.split("\n"));
 ---
 
 <Layout title={"关于我们"}>

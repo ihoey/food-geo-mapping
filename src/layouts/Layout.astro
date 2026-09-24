@@ -4,6 +4,8 @@ import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+import "@fontsource-variable/noto-sans-sc";
+import "@fontsource-variable/manrope";
 import "../styles/index.scss";
 
 interface Props {
@@ -14,29 +16,22 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang='en'>
+<html lang='zh-CN'>
   <head>
     <meta charset='UTF-8' />
-    <meta name='description' content='Astro description' />
+    <meta name='description' content='吃货指南，探索各地小吃、水果与特产。' />
     <meta name='viewport' content='width=device-width' />
     <link rel='icon' type='image/png' href='/favicon.png' />
     <meta name='generator' content={Astro.generator} />
     <title>{title}</title>
     <ClientRouter />
-    <style>
-      body {
-        background: #333
-          url("https://cdn.ihoey.com/food/img/rain_bg.png?imageMogr2/format/webp/blur/1x0/quality/90")
-          no-repeat;
-      }
-    </style>
   </head>
   <body>
     <Header />
 
-    <section transition:animate='fade' class='ds-main container'>
+    <main transition:animate='fade' class='ds-main container'>
       <slot />
-    </section>
+    </main>
 
     <Footer />
   </body>

@@ -1,17 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import CategoryPlaceholder from "../components/CategoryPlaceholder.astro";
+import fruitLogo from "../assets/fruit_logo.svg";
 ---
 
-<Layout title={"水果"}>
-  <div class='container ds-home'>
-    <h1 style='color:#fff;'>页面装修中...</h1>
-  </div>
+<Layout title='水果'>
+  <CategoryPlaceholder
+    title='水果指南，正在准备中'
+    description='我们正在整理水果的产地与风味，内容上线后会在这里与你见面。'
+    image={fruitLogo.src}
+  />
 </Layout>
-
-<style lang='scss' scoped>
-  .ds-home {
-    display: flex;
-    // width: 100%;
-    min-height: 1000px;
-  }
-</style>
